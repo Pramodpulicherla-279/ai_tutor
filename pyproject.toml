@@ -1,0 +1,36 @@
+[project]
+name = "devel-ai-tutor"
+version = "0.1.0"
+description = "Context-aware AI Tutor microservice for the dev.el learning platform"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "pyjwt>=2.8",
+    "httpx>=0.27",
+]
+
+# Heavy integrations are optional and imported lazily — the service boots and
+# streams (mock mode, in-memory memory) with only the core deps above installed.
+[project.optional-dependencies]
+integrations = [
+    "google-genai>=1.0",      # Gemini 2.5 Flash generation
+    "motor>=3.4",             # async MongoDB driver (ai_tutor + Atlas Vector Search)
+    "redis>=5.0",             # short-term memory / cache
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

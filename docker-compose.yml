@@ -1,0 +1,13 @@
+services:
+  api:
+    build: .
+    env_file: .env
+    ports: ["8000:8000"]
+    depends_on: [redis]
+    # MONGODB_URI (in .env) points at your MongoDB Atlas cluster — vector search
+    # requires Atlas, so MongoDB is not run as a local compose service here.
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
