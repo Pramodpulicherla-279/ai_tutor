@@ -33,6 +33,7 @@ class ContextBuilder:
             "course_id": req.course_id,
             "lesson_ids": [req.lesson_id] if req.lesson_id else None,
         }
+        learner_name = (req.learner_name or "").strip() or "there"
         return CurrentContext(
             user_id=user_id,
             course_id=req.course_id,
@@ -40,6 +41,7 @@ class ContextBuilder:
             lesson_id=req.lesson_id,
             lesson_title=lesson_title,
             topic=topic,
+            learner_name=learner_name,
             skill_mode=skill_mode,
             socratic_level=SOCRATIC[skill_mode],
             progress_summary=progress_summary,

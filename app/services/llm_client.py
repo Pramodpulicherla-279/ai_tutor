@@ -15,7 +15,23 @@ class LLMClient:
     def __init__(self) -> None:
         self._client = None
         self.last_usage: dict = {}
-        if settings.GEMINI_API_KEY:
+        if settings.GEMINI_USE_VERTEX:
+            try:
+                from google import genai  # lazy: only needed when configured
+
+                # Vertex AI: auth via Application Default Credentials (gcloud auth
+                # application-default login, or GOOGLE_APPLICATION_CREDENTIALS pointing
+                # at a service-account key). Bills through the GCP project.
+                self._client = genai.Client(
+                    vertexai=True,
+                    project=settings.GOOGLE_CLOUD_PROJECT,
+                    location=settings.GOOGLE_CLOUD_LOCATION,
+                )
+                log.info("Gemini via Vertex AI (project=%s, location=%s)",
+                         settings.GOOGLE_CLOUD_PROJECT, settings.GOOGLE_CLOUD_LOCATION)
+            except Exception as exc:  # pragma: no cover
+                log.warning("vertex init failed, falling back to mock: %s", exc)
+        elif settings.GEMINI_API_KEY:
             try:
                 from google import genai  # lazy: only needed when configured
 
@@ -73,7 +89,19 @@ class LLMClient:
         except Exception as exc:
             log.error("llm stream failed: %s", exc)
             self.last_usage = {"model": model, "error": str(exc)}
-            yield f"\n\n_(The model call failed: {exc})_"
+            yield "\n\n" + self._friendly_error(exc)
+
+    @staticmethod
+    def _friendly_error(exc: Exception) -> str:
+        """User-facing error text. Keep raw billing/quota details in the logs only —
+        never surface account/billing URLs to the learner UI."""
+        msg = str(exc)
+        if "RESOURCE_EXHAUSTED" in msg or "429" in msg:
+            return ("_The AI tutor has hit its usage limit right now. Please try again "
+                    "shortly — if it keeps happening, the API quota or billing needs a top-up._")
+        if "PERMISSION_DENIED" in msg or "401" in msg or "UNAUTHENTICATED" in msg:
+            return "_The AI tutor isn't configured correctly (auth). Please contact support._"
+        return "_The AI tutor couldn't generate a response just now. Please try again._"
 
     async def _mock_stream(self, messages: list[dict]):
         user = messages[-1]["content"] if messages else ""

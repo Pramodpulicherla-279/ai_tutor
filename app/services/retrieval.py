@@ -43,7 +43,7 @@ class RetrievalService:
         lesson_ids = scope.get("lesson_ids")
         if lesson_ids:
             clause["lesson_id"] = {"$in": lesson_ids}
-        if intent == "coding":
+        if intent in ("coding", "sandbox"):
             clause["source_type"] = "code_example"
         return clause
 

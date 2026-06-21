@@ -3,7 +3,8 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-Mode = Literal["tutor", "coding", "quiz", "revision", "summary"]
+# "sandbox" = the in-editor Code Guide: strictly scoped to the learner's code.
+Mode = Literal["tutor", "coding", "quiz", "revision", "summary", "sandbox"]
 
 
 class ChatRequest(BaseModel):
@@ -14,8 +15,11 @@ class ChatRequest(BaseModel):
     lesson_title: Optional[str] = None
     lesson_slug: Optional[str] = None
     topic: Optional[str] = None
+    learner_name: Optional[str] = None
     mode: Mode = "tutor"
-    message: str = Field(min_length=1, max_length=4000)
+    # Code Guide bundles the editor files into the message, so allow more room
+    # than a plain chat line while still capping the payload.
+    message: str = Field(min_length=1, max_length=8000)
 
 
 class Citation(BaseModel):
@@ -43,6 +47,7 @@ class CurrentContext(BaseModel):
     lesson_id: Optional[str] = None
     lesson_title: str = "this lesson"
     topic: str = ""
+    learner_name: str = "there"
     skill_mode: str = "beginner"
     socratic_level: int = 2
     progress_summary: str = "no progress data yet"

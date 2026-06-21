@@ -32,7 +32,16 @@ class Settings(BaseSettings):
     PLATFORM_API_URL: str | None = None    # Node/Express backend base url
 
     # Generation (Google Gemini) --------------------------------------------
+    # Two paths to Gemini, in priority order:
+    #  1. Vertex AI  — set GEMINI_USE_VERTEX=true + GOOGLE_CLOUD_PROJECT (+ ADC
+    #     credentials). Bills through your GCP billing account, not the Gemini
+    #     Developer-API prepay credits. Use this when you have a GCP project /
+    #     service account (e.g. depleted "prepayment credits" on the dev API).
+    #  2. Developer API — set GEMINI_API_KEY (from AI Studio or a Gemini-API key).
     GEMINI_API_KEY: str | None = None
+    GEMINI_USE_VERTEX: bool = False
+    GOOGLE_CLOUD_PROJECT: str | None = None      # e.g. "dev-el"
+    GOOGLE_CLOUD_LOCATION: str = "us-central1"    # Vertex region (or "global")
     MODEL_SMART: str = "gemini-2.5-flash"
     MODEL_FAST: str = "gemini-2.5-flash"   # use gemini-2.5-flash-lite to cut cost further
     MAX_OUTPUT_TOKENS: int = 1024
