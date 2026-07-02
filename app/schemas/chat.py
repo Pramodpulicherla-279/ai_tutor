@@ -4,7 +4,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 # "sandbox" = the in-editor Code Guide: strictly scoped to the learner's code.
-Mode = Literal["tutor", "coding", "quiz", "revision", "summary", "sandbox"]
+Mode = Literal["tutor", "coding", "quiz", "revision", "summary", "sandbox", "code_review"]
 
 
 class ChatRequest(BaseModel):
