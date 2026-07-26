@@ -1,5 +1,6 @@
-"""Generation via Google Gemini 2.5 Flash. Streams tokens. Without GEMINI_API_KEY it
-runs a deterministic mock streamer so the whole service is demoable with zero creds.
+"""Generation via Google Gemini 2.5 Flash on the AI Studio Developer API (never
+Vertex AI). Streams tokens. Without GEMINI_API_KEY it runs a deterministic mock
+streamer so the whole service is demoable with zero creds.
 
 Gemini specifics: the system prompt goes to `system_instruction`; chat turns become
 `contents` with roles user/model (assistant -> model)."""
@@ -15,29 +16,23 @@ class LLMClient:
     def __init__(self) -> None:
         self._client = None
         self.last_usage: dict = {}
-        if settings.GEMINI_USE_VERTEX:
+        if settings.GEMINI_API_KEY:
             try:
                 from google import genai  # lazy: only needed when configured
 
-                # Vertex AI: auth via Application Default Credentials (gcloud auth
-                # application-default login, or GOOGLE_APPLICATION_CREDENTIALS pointing
-                # at a service-account key). Bills through the GCP project.
+                # AI Studio (Developer API) only — usage draws on the AI Studio prepaid
+                # credits. vertexai=False is passed explicitly so an ambient
+                # GOOGLE_GENAI_USE_VERTEXAI or GOOGLE_CLOUD_PROJECT in the environment
+                # can never silently reroute billing to a GCP account.
                 self._client = genai.Client(
-                    vertexai=True,
-                    project=settings.GOOGLE_CLOUD_PROJECT,
-                    location=settings.GOOGLE_CLOUD_LOCATION,
+                    api_key=settings.GEMINI_API_KEY,
+                    vertexai=False,
                 )
-                log.info("Gemini via Vertex AI (project=%s, location=%s)",
-                         settings.GOOGLE_CLOUD_PROJECT, settings.GOOGLE_CLOUD_LOCATION)
-            except Exception as exc:  # pragma: no cover
-                log.warning("vertex init failed, falling back to mock: %s", exc)
-        elif settings.GEMINI_API_KEY:
-            try:
-                from google import genai  # lazy: only needed when configured
-
-                self._client = genai.Client(api_key=settings.GEMINI_API_KEY)
+                log.info("Gemini via AI Studio Developer API (prepaid credits)")
             except Exception as exc:  # pragma: no cover
                 log.warning("gemini init failed: %s", exc)
+        else:
+            log.warning("GEMINI_API_KEY not set — running the mock tutor")
 
     @property
     def live(self) -> bool:
