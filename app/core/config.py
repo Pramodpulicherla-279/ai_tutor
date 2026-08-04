@@ -36,8 +36,8 @@ class Settings(BaseSettings):
     # https://aistudio.google.com/apikey and spends the AI Studio prepaid credits.
     # Vertex AI is deliberately unsupported so usage can never bill a GCP account.
     GEMINI_API_KEY: str | None = None
-    MODEL_SMART: str = "gemini-2.5-flash"
-    MODEL_FAST: str = "gemini-2.5-flash"   # use gemini-2.5-flash-lite to cut cost further
+    MODEL_SMART: str = "gemini-3.6-flash"
+    MODEL_FAST: str = "gemini-3.6-flash"   # use gemini-2.5-flash-lite to cut cost further
     MAX_OUTPUT_TOKENS: int = 1024
     TEMPERATURE: float = 0.6
     RETRIEVAL_K: int = 6

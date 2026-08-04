@@ -1,4 +1,4 @@
-"""Generation via Google Gemini 2.5 Flash on the AI Studio Developer API (never
+"""Generation via Google Gemini 3.6 Flash on the AI Studio Developer API (never
 Vertex AI). Streams tokens. Without GEMINI_API_KEY it runs a deterministic mock
 streamer so the whole service is demoable with zero creds.
 

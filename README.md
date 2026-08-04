@@ -10,7 +10,7 @@ Design docs: [`../docs/dev-el-ai-tutor/`](../docs/dev-el-ai-tutor/README.md).
 ## Stack
 | Concern | Tech |
 |---|---|
-| Generation | Google **Gemini 2.5 Flash** (`google-genai`) |
+| Generation | Google **Gemini 3.6 Flash** (`google-genai`) |
 | Tutor data (conversations, messages, analytics, gaps) | **MongoDB** `ai_tutor` (motor) |
 | Lesson-content retrieval (RAG) | **MongoDB Atlas Vector Search** (auto-embedding) |
 | Short-term memory / cache | Redis (optional; in-memory fallback) |
